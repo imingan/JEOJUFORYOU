@@ -3,486 +3,524 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚔️ 표창의 전당</title>
+<title>⚔️ 저주인형 전당</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
+/* ══════════════════════════════════
+   여기에 키 입력하세요 (JS 상단에도 있음)
+══════════════════════════════════ */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#07070f;--bg2:#0d0d1e;--bg3:#111128;--bg4:#161630;
-  --red:#c41825;--red-h:#e02030;--red-glow:rgba(196,24,37,.25);
+  --bg:#07070f;--bg2:#0d0d1e;--bg3:#111128;--bg4:#16162e;
+  --red:#c41825;--red-h:#e02030;--rg:rgba(196,24,37,.22);
   --gold:#c49a20;--gold-l:#e8b840;--gold-d:#8a6a10;
-  --silver-l:#c0c0c0;--bronze-l:#cd7f32;
+  --silver:#c0c0c0;--bronze:#cd7f32;
   --text:#ddd5c0;--text2:#9090a8;--text3:#55556a;
   --border:#1c1c35;--border2:#262645;--border3:#323260;
-  --green-l:#3dd080;
+  --green:#3dd080;--purple:#a070e0;
 }
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;display:flex;flex-direction:column}
 
-/* ── ADMIN SETUP (주인 전용, 숨겨져 있음) ── */
-#admin-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.92);
-  display:none;align-items:center;justify-content:center;z-index:9000;
-}
-#admin-overlay.show{display:flex}
-#admin-box{
-  background:var(--bg2);border:1px solid var(--gold-d);border-radius:14px;
-  padding:1.8rem;width:400px;max-width:92vw;
-  box-shadow:0 0 50px rgba(196,154,32,.15),0 25px 60px rgba(0,0,0,.95);
-}
-#admin-box h2{font-family:'Black Han Sans',sans-serif;font-size:1rem;color:var(--gold-l);margin-bottom:.3rem}
-.admin-desc{font-size:.7rem;color:var(--text3);line-height:1.7;margin-bottom:1.2rem}
-.admin-field{margin-bottom:.8rem}
-.admin-field label{display:block;font-size:.65rem;color:var(--text3);letter-spacing:.06em;margin-bottom:.28rem}
-.admin-field input{
-  width:100%;background:var(--bg3);border:1px solid var(--border2);
-  border-radius:6px;color:var(--text);font-family:'Noto Sans KR',sans-serif;
-  font-size:.78rem;padding:.5rem .75rem;outline:none;transition:border-color .2s;
-}
-.admin-field input:focus{border-color:var(--gold-d)}
-.admin-field input::placeholder{color:var(--text3);opacity:.5;font-size:.72rem}
-#admin-err{font-size:.7rem;color:var(--red);min-height:1rem;margin:.3rem 0;text-align:center}
-#admin-save{
-  width:100%;padding:.7rem;background:var(--gold-d);color:var(--bg);
-  border:none;border-radius:7px;font-family:'Black Han Sans',sans-serif;
-  font-size:.88rem;letter-spacing:.08em;cursor:pointer;transition:background .15s;
-}
-#admin-save:hover{background:var(--gold)}
-#admin-save:disabled{opacity:.5;cursor:not-allowed}
-.admin-hint{font-size:.63rem;color:var(--text3);text-align:center;margin-top:.8rem;line-height:1.6}
-
-/* ── HOF ── */
+/* ══ HOF ══ */
 #hof{
-  background:linear-gradient(135deg,#0c0a1e 0%,#14102a 50%,#0c0a1e 100%);
+  background:linear-gradient(135deg,#0c0a1e,#14102a,#0c0a1e);
   border-bottom:1px solid var(--border2);
-  padding:.55rem 1.1rem;flex-shrink:0;z-index:10;
+  padding:.5rem 1.2rem;flex-shrink:0;
   display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
 }
 #hof-title{
-  font-family:'Black Han Sans',sans-serif;font-size:.83rem;
-  color:var(--gold-l);display:flex;align-items:center;gap:.38rem;
-  flex-shrink:0;white-space:nowrap;
+  font-family:'Black Han Sans',sans-serif;font-size:.82rem;
+  color:var(--gold-l);white-space:nowrap;display:flex;align-items:center;gap:.35rem;
 }
-.hof-ranks{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;flex:1}
-.hof-rank{
+.hof-ranks{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;flex:1}
+.hr{
   display:flex;align-items:center;gap:.38rem;
   background:var(--bg3);border:1px solid var(--border);
-  border-radius:8px;padding:.25rem .65rem;
-  animation:rank-in .4s ease-out both;
-  transition:transform .2s;
+  border-radius:8px;padding:.22rem .62rem;
+  animation:rkin .4s ease-out both;transition:transform .18s;
 }
-.hof-rank:hover{transform:translateY(-1px)}
-@keyframes rank-in{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
-.rank-medal{font-size:.95rem;line-height:1;flex-shrink:0}
-.rank-info{display:flex;flex-direction:column}
-.rank-name{font-family:'Black Han Sans',sans-serif;font-size:.78rem;line-height:1.2}
-.rank-cnt{font-size:.58rem;color:var(--text3);line-height:1}
-.hof-rank.r1{border-color:var(--gold-d);background:rgba(196,154,32,.08)}
-.hof-rank.r1 .rank-name{color:var(--gold-l)}
-.hof-rank.r2{border-color:rgba(144,144,144,.38)}
-.hof-rank.r2 .rank-name{color:var(--silver-l)}
-.hof-rank.r3{border-color:rgba(138,80,32,.45)}
-.hof-rank.r3 .rank-name{color:var(--bronze-l)}
+.hr:hover{transform:translateY(-1px)}
+@keyframes rkin{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.hr.r1{border-color:var(--gold-d);background:rgba(196,154,32,.08)}
+.hr.r1 .rn{color:var(--gold-l)}
+.hr.r2{border-color:rgba(144,144,144,.35)}
+.hr.r2 .rn{color:var(--silver)}
+.hr.r3{border-color:rgba(138,80,32,.4)}
+.hr.r3 .rn{color:var(--bronze)}
+.rm{font-size:.9rem;flex-shrink:0}
+.rinfo{display:flex;flex-direction:column}
+.rn{font-family:'Black Han Sans',sans-serif;font-size:.76rem;line-height:1.2}
+.rc{font-size:.57rem;color:var(--text3)}
+.hof-r{margin-left:auto;display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pd 2s ease infinite;flex-shrink:0}
+@keyframes pd{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(61,208,128,.5)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(61,208,128,0)}}
+.sp{font-size:.66rem;color:var(--text2);display:flex;align-items:center;gap:.22rem}
+.sp b{color:var(--gold-l);font-weight:700}
 .hof-empty{font-size:.7rem;color:var(--text3);font-style:italic}
-.hof-right{margin-left:auto;display:flex;align-items:center;gap:.65rem;flex-shrink:0}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green-l);animation:pulse-dot 2s ease infinite;flex-shrink:0}
-@keyframes pulse-dot{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(61,208,128,.5)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(61,208,128,0)}}
-.stat-pill{font-size:.67rem;color:var(--text2);display:flex;align-items:center;gap:.25rem}
-.stat-pill b{color:var(--gold-l);font-weight:700}
 
-/* ── HEADER ── */
+/* ══ HEADER ══ */
 #hdr{
   display:flex;align-items:center;justify-content:space-between;
-  padding:.48rem 1.1rem;background:var(--bg2);
-  border-bottom:1px solid var(--border);flex-shrink:0;z-index:10;
-  cursor:default;
+  padding:.45rem 1.1rem;background:var(--bg2);
+  border-bottom:1px solid var(--border);flex-shrink:0;
 }
-.h-left{display:flex;align-items:center;gap:.48rem}
-#hdr h1{
-  font-family:'Black Han Sans',sans-serif;font-size:1.1rem;
-  letter-spacing:.05em;color:var(--text);
-  /* 주인은 여기 5번 클릭하면 관리자 패널 열려요 */
-  user-select:none;
-}
-.h-sub{font-size:.55rem;color:var(--text3);letter-spacing:.12em;border-left:1px solid var(--border2);padding-left:.48rem}
-.h-right{font-size:.68rem;color:var(--text3)}
+#hdr h1{font-family:'Black Han Sans',sans-serif;font-size:1.1rem;letter-spacing:.05em}
+.h-sub{font-size:.55rem;color:var(--text3);letter-spacing:.1em;border-left:1px solid var(--border2);padding-left:.45rem}
+.h-right{font-size:.67rem;color:var(--text3)}
 
-/* ── BODY ── */
+/* ══ BODY ══ */
 #body{display:flex;flex:1;overflow:hidden;min-height:0}
 
-/* ── LEFT ── */
-#left{width:280px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-#arena{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse 80% 85% at 50% 55%,#0f0f26 0%,#07070f 100%)}
-.ring{position:absolute;border-radius:50%;border:1px solid rgba(30,30,70,.38);pointer-events:none}
-#target-wrap{position:relative;display:flex;flex-direction:column;align-items:center;z-index:10}
-#nick-tag{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:.17rem .72rem;margin-bottom:.42rem;display:flex;align-items:center;gap:.26rem;font-size:.68rem;white-space:nowrap;max-width:195px;overflow:hidden}
-.tag-name{color:var(--gold-l);font-family:'Black Han Sans',sans-serif;font-size:.78rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tag-sf{color:var(--text3);font-size:.62rem;flex-shrink:0}
-#doll-svg{width:140px;height:225px;filter:drop-shadow(0 8px 22px rgba(0,0,0,.9))}
-.dp{transition:transform .65s cubic-bezier(.2,.8,.2,1),opacity .65s ease-out}
-#stand{display:flex;flex-direction:column;align-items:center;margin-top:-2px}
-.s-pole{width:6px;height:20px;background:linear-gradient(90deg,#2a1608,#5a3018,#2a1608);border-radius:2px}
-.s-base{width:72px;height:10px;background:linear-gradient(180deg,#4a2a10,#332010);border-radius:3px;box-shadow:0 3px 10px rgba(0,0,0,.8)}
+/* ══ LEFT: ADD DOLL ══ */
+#left{
+  width:270px;flex-shrink:0;
+  background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;padding:1.1rem .95rem;gap:.85rem;
+  overflow-y:auto;
+}
+#left h2{
+  font-family:'Black Han Sans',sans-serif;font-size:.9rem;
+  color:var(--text);letter-spacing:.04em;
+  display:flex;align-items:center;gap:.4rem;
+}
+.form-group{display:flex;flex-direction:column;gap:.2rem}
+.form-group label{font-size:.6rem;color:var(--text3);letter-spacing:.06em}
+.form-group input,.form-group textarea{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:6px;color:var(--text);font-family:'Noto Sans KR',sans-serif;
+  font-size:.78rem;padding:.46rem .68rem;outline:none;
+  transition:border-color .2s;resize:none;width:100%;
+}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--red)}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--text3);opacity:.55;font-size:.72rem}
+.form-group textarea{min-height:65px;line-height:1.6}
 
-#shuri{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;z-index:50;pointer-events:none;filter:drop-shadow(0 0 10px rgba(180,200,220,.5))}
-#shuri.fly{display:block;animation:fly .58s cubic-bezier(.1,.5,.25,1) forwards}
-@keyframes fly{
-  0%{transform:translate(calc(-50% - 660px),-50%) rotate(0deg);opacity:1}
+#add-btn{
+  width:100%;padding:.68rem;background:var(--red);color:#fff;
+  border:none;border-radius:7px;font-family:'Black Han Sans',sans-serif;
+  font-size:.88rem;letter-spacing:.08em;cursor:pointer;
+  transition:background .15s,box-shadow .15s;
+  box-shadow:0 3px 14px var(--rg);
+}
+#add-btn:hover{background:var(--red-h);box-shadow:0 5px 18px rgba(224,32,48,.35)}
+#add-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+
+.form-hint{font-size:.64rem;color:var(--text3);line-height:1.65;text-align:center}
+
+.divider{height:1px;background:var(--border);margin:.2rem 0}
+
+/* my dolls preview in left panel */
+#my-dolls-preview h3{font-size:.68rem;color:var(--text3);letter-spacing:.06em;margin-bottom:.5rem}
+.my-doll-chip{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:7px;padding:.38rem .62rem;margin-bottom:.38rem;
+  font-size:.76rem;
+}
+.mdc-nick{color:var(--gold-l);font-family:'Black Han Sans',sans-serif;font-size:.8rem}
+.mdc-cnt{font-size:.62rem;color:var(--text3)}
+
+/* ══ RIGHT: FEED ══ */
+#right{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#feed-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.55rem .95rem;background:var(--bg2);
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.ft{display:flex;align-items:center;gap:.42rem;font-size:.78rem;font-weight:500}
+.fcnt{font-size:.63rem;color:var(--text3);background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:.1rem .5rem}
+.fa{display:flex;gap:.38rem}
+.fb{font-size:.63rem;color:var(--text3);background:transparent;border:1px solid var(--border);border-radius:5px;padding:.18rem .55rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s}
+.fb:hover{border-color:var(--border3);color:var(--text2)}
+.fb.act{border-color:var(--gold-d);color:var(--gold)}
+
+#feed{flex:1;overflow-y:auto;padding:.75rem .9rem;display:flex;flex-direction:column;gap:.85rem}
+#feed::-webkit-scrollbar{width:3px}
+#feed::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── CREATOR BLOCK ── */
+.creator-block{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;
+  animation:cin .35s ease-out both;
+}
+@keyframes cin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.cb-header{
+  display:flex;align-items:center;gap:.55rem;
+  padding:.6rem .85rem;
+  background:var(--bg3);border-bottom:1px solid var(--border);
+}
+.cb-avatar{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Black Han Sans',sans-serif;font-size:.75rem;
+  flex-shrink:0;
+}
+.cb-name{font-family:'Black Han Sans',sans-serif;font-size:.88rem;color:var(--text)}
+.cb-sub{font-size:.62rem;color:var(--text3)}
+.cb-dolls{padding:.55rem .7rem;display:flex;flex-direction:column;gap:.45rem}
+
+/* ── DOLL CARD ── */
+.dc{
+  display:flex;align-items:flex-start;gap:.7rem;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:9px;padding:.55rem .7rem;
+  transition:border-color .2s;
+}
+.dc:hover{border-color:var(--border3)}
+.dc-doll{flex-shrink:0;width:52px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.dc-doll svg{filter:drop-shadow(0 3px 8px rgba(0,0,0,.8))}
+.dc-hit-bar{
+  width:100%;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;
+}
+.dc-hit-fill{height:100%;background:var(--red);border-radius:2px;transition:width .6s ease}
+.dc-body{flex:1;min-width:0}
+.dc-top{display:flex;align-items:center;gap:.38rem;margin-bottom:.3rem;flex-wrap:wrap}
+.dc-nick{font-family:'Black Han Sans',sans-serif;font-size:.9rem;color:var(--gold-l)}
+.dc-sf{font-size:.65rem;color:var(--text3)}
+.dc-cnt{font-size:.62rem;color:var(--red);background:rgba(196,24,37,.1);border:1px solid rgba(196,24,37,.22);border-radius:12px;padding:.08rem .45rem;margin-left:auto;flex-shrink:0}
+.dc-reason{font-size:.73rem;color:var(--text2);line-height:1.5;padding:.28rem .48rem;border-left:2px solid var(--border2);margin-bottom:.42rem;word-break:break-all;white-space:pre-wrap}
+
+/* throws list */
+.dc-throws{display:flex;flex-direction:column;gap:.28rem;margin-bottom:.42rem}
+.throw-item{
+  display:flex;align-items:flex-start;gap:.32rem;
+  font-size:.7rem;color:var(--text2);
+  padding:.22rem .42rem;
+  background:rgba(255,255,255,.02);border-radius:5px;
+}
+.throw-icon{flex-shrink:0;font-size:.8rem}
+.throw-fortune{line-height:1.5;color:var(--text);font-size:.7rem}
+.throw-time{font-size:.58rem;color:var(--text3);margin-left:auto;white-space:nowrap;flex-shrink:0}
+.throw-more{font-size:.63rem;color:var(--text3);cursor:pointer;margin-bottom:.35rem;transition:color .18s}
+.throw-more:hover{color:var(--text2)}
+
+.dc-throw-btn{
+  display:flex;align-items:center;gap:.35rem;
+  background:transparent;border:1px solid var(--red);
+  color:var(--red);border-radius:20px;
+  padding:.28rem .75rem;font-size:.72rem;
+  cursor:pointer;font-family:'Noto Sans KR',sans-serif;
+  transition:background .18s,color .18s;
+  width:fit-content;
+}
+.dc-throw-btn:hover{background:var(--red);color:#fff}
+.dc-throw-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ══ THROW MODAL ══ */
+#throw-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.88);
+  display:none;align-items:center;justify-content:center;z-index:500;
+}
+#throw-modal.show{display:flex}
+#tm-box{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:14px;
+  width:340px;max-width:94vw;overflow:hidden;
+  box-shadow:0 0 50px var(--rg),0 25px 60px rgba(0,0,0,.95);
+}
+#tm-arena{
+  position:relative;height:220px;
+  background:radial-gradient(ellipse 80% 80% at 50% 55%,#0f0f26,#07070f);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.tm-ring{position:absolute;border-radius:50%;border:1px solid rgba(30,30,70,.38);pointer-events:none}
+#tm-target{display:flex;flex-direction:column;align-items:center;z-index:10;position:relative}
+#tm-nick-tag{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:.16rem .65rem;margin-bottom:.38rem;font-size:.68rem;display:flex;align-items:center;gap:.25rem}
+.tmnt{color:var(--gold-l);font-family:'Black Han Sans',sans-serif;font-size:.76rem}
+.tmsf{color:var(--text3);font-size:.62rem}
+.tmdp{transition:transform .62s cubic-bezier(.2,.8,.2,1),opacity .62s ease-out}
+#tm-stand{display:flex;flex-direction:column;align-items:center;margin-top:-1px}
+.tms-pole{width:5px;height:16px;background:linear-gradient(90deg,#2a1608,#5a3018,#2a1608);border-radius:2px}
+.tms-base{width:58px;height:8px;background:linear-gradient(180deg,#4a2a10,#332010);border-radius:3px;box-shadow:0 3px 8px rgba(0,0,0,.8)}
+#tm-shuri{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;z-index:50;pointer-events:none;filter:drop-shadow(0 0 8px rgba(180,200,220,.5))}
+#tm-shuri.fly{display:block;animation:tmfly .55s cubic-bezier(.1,.5,.25,1) forwards}
+@keyframes tmfly{
+  0%{transform:translate(calc(-50% - 550px),-50%) rotate(0deg);opacity:1}
   82%{transform:translate(-50%,-50%) rotate(1080deg);opacity:1}
   100%{transform:translate(-50%,-50%) rotate(1080deg);opacity:0}
 }
-#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:200;transition:opacity .07s}
-#flash.on{opacity:1}
-.pt{position:absolute;border-radius:50%;pointer-events:none;z-index:150;transition:transform .7s cubic-bezier(.2,.8,.3,1),opacity .55s ease-out}
+#tm-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:200;transition:opacity .07s}
+#tm-flash.on{opacity:1}
+.tmpt{position:absolute;border-radius:50%;pointer-events:none;z-index:150;transition:transform .65s cubic-bezier(.2,.8,.3,1),opacity .5s ease-out}
+#tm-fortune{
+  position:absolute;inset:0;background:rgba(7,7,16,.96);
+  display:none;align-items:center;justify-content:center;z-index:180;
+}
+#tm-fortune.show{display:flex;animation:fin .3s ease-out}
+@keyframes fin{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+#tm-f-inner{padding:1.3rem;text-align:center}
+.tmfi{font-size:1.8rem;display:block;margin-bottom:.45rem;animation:bob 2.5s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+#tm-f-text{font-family:'Noto Serif KR',serif;font-size:.78rem;line-height:1.9;color:var(--text);margin-bottom:1rem;word-break:keep-all}
+#tm-f-text.loading{color:var(--text3);font-style:italic}
+#tm-form{padding:.75rem .9rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:.55rem}
+.tm-who{font-size:.72rem;color:var(--text2);text-align:center;padding:.3rem;border-bottom:1px solid var(--border);margin-bottom:.2rem}
+.tm-who b{color:var(--gold-l);font-family:'Black Han Sans',sans-serif}
+#tm-myname{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:.78rem;padding:.44rem .66rem;outline:none;transition:border-color .2s}
+#tm-myname:focus{border-color:var(--purple)}
+#tm-myname::placeholder{color:var(--text3);opacity:.55;font-size:.72rem}
+#tm-msg{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:.76rem;padding:.44rem .66rem;outline:none;transition:border-color .2s;resize:none;min-height:52px;line-height:1.6}
+#tm-msg:focus{border-color:var(--red)}
+#tm-msg::placeholder{color:var(--text3);opacity:.55;font-size:.7rem}
+.tm-btns{display:flex;gap:.45rem}
+#tm-throw-btn{
+  flex:1;padding:.6rem;background:var(--red);color:#fff;border:none;border-radius:7px;
+  font-family:'Black Han Sans',sans-serif;font-size:.85rem;letter-spacing:.08em;
+  cursor:pointer;transition:background .15s,box-shadow .15s;
+  box-shadow:0 3px 12px var(--rg);
+}
+#tm-throw-btn:hover{background:var(--red-h)}
+#tm-throw-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+#tm-cancel{
+  padding:.6rem .9rem;background:transparent;border:1px solid var(--border2);
+  color:var(--text3);border-radius:7px;font-family:'Noto Sans KR',sans-serif;
+  font-size:.78rem;cursor:pointer;transition:all .18s;
+}
+#tm-cancel:hover{border-color:var(--border3);color:var(--text2)}
+#tm-close-btn{
+  width:100%;padding:.52rem;background:transparent;border:1px solid var(--border2);
+  color:var(--text2);border-radius:7px;font-family:'Noto Sans KR',sans-serif;
+  font-size:.78rem;cursor:pointer;margin-top:.5rem;transition:all .18s;
+}
+#tm-close-btn:hover{background:var(--bg3)}
 
-#fortune{position:absolute;inset:0;background:rgba(7,7,16,.95);display:none;align-items:center;justify-content:center;z-index:180}
-#fortune.show{display:flex;animation:f-in .35s ease-out}
-@keyframes f-in{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-#f-box{padding:1.5rem 1.3rem;text-align:center;background:var(--bg2);border:1px solid var(--border2);border-radius:12px;margin:1rem;box-shadow:0 0 40px rgba(196,24,37,.12),0 20px 50px rgba(0,0,0,.95)}
-.f-icon{font-size:2rem;display:block;margin-bottom:.5rem;animation:bob 2.5s ease-in-out infinite}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-#f-text{font-family:'Noto Serif KR',serif;font-size:.8rem;line-height:1.9;color:var(--text);margin-bottom:1.2rem;word-break:keep-all;min-height:44px}
-#f-text.loading{color:var(--text3);font-style:italic}
-#again-btn{padding:.46rem 1.3rem;background:transparent;border:1px solid var(--gold-d);color:var(--gold);border-radius:6px;font-family:'Noto Sans KR',sans-serif;font-size:.75rem;letter-spacing:.04em;cursor:pointer;transition:background .2s,color .2s}
-#again-btn:hover{background:var(--gold);color:var(--bg)}
+/* skel */
+.skel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:.85rem;animation:sp 1.6s ease infinite}
+.sl{height:9px;border-radius:4px;background:var(--bg3);margin-bottom:.48rem}
+@keyframes sp{0%,100%{opacity:.6}50%{opacity:1}}
 
-/* ── FORM ── */
-#form-strip{background:var(--bg3);border-top:1px solid var(--border);padding:.78rem .92rem;display:flex;flex-direction:column;gap:.58rem;flex-shrink:0}
-.row-label{font-size:.59rem;color:var(--text3);letter-spacing:.06em;margin-bottom:.16rem}
-#form-strip input,#form-strip textarea{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:.78rem;padding:.46rem .68rem;outline:none;transition:border-color .2s;resize:none}
-#form-strip input:focus,#form-strip textarea:focus{border-color:var(--red)}
-#form-strip input::placeholder,#form-strip textarea::placeholder{color:var(--text3);opacity:.6;font-size:.72rem}
-#form-strip textarea{min-height:60px;line-height:1.6}
-#throw-btn{width:100%;padding:.68rem;background:var(--red);color:#fff;border:none;border-radius:7px;font-family:'Black Han Sans',sans-serif;font-size:.9rem;letter-spacing:.1em;cursor:pointer;transition:background .15s,transform .1s,box-shadow .15s;box-shadow:0 3px 16px var(--red-glow);position:relative;overflow:hidden}
-#throw-btn:hover:not(:disabled){background:var(--red-h);box-shadow:0 5px 20px rgba(224,32,48,.38)}
-#throw-btn:active:not(:disabled){transform:scale(.97)}
-#throw-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
-#throw-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);transition:left .5s}
-#throw-btn:hover:not(:disabled)::after{left:100%}
-
-/* ── RIGHT FEED ── */
-#right{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
-#feed-hdr{display:flex;align-items:center;justify-content:space-between;padding:.58rem .95rem;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
-.feed-title{display:flex;align-items:center;gap:.42rem;font-size:.78rem;font-weight:500;color:var(--text)}
-.feed-cnt{font-size:.64rem;color:var(--text3);background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:.1rem .52rem}
-.feed-actions{display:flex;gap:.38rem}
-.feed-btn{font-size:.64rem;color:var(--text3);background:transparent;border:1px solid var(--border);border-radius:5px;padding:.18rem .58rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s}
-.feed-btn:hover{border-color:var(--border3);color:var(--text2)}
-.feed-btn.active{border-color:var(--gold-d);color:var(--gold)}
-#feed-list{flex:1;overflow-y:auto;padding:.68rem .78rem;display:flex;flex-direction:column;gap:.48rem}
-#feed-list::-webkit-scrollbar{width:3px}
-#feed-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.skel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.78rem;animation:skel-pulse 1.6s ease infinite}
-.skel-line{height:9px;border-radius:4px;background:var(--bg3);margin-bottom:.48rem}
-@keyframes skel-pulse{0%,100%{opacity:.6}50%{opacity:1}}
-
-.fc{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.68rem .82rem;transition:border-color .2s,transform .15s;animation:card-in .3s ease-out both}
-@keyframes card-in{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
-.fc:hover{border-color:var(--border3);transform:translateX(2px)}
-.fc.mine{border-left:2px solid var(--red)}
-.fc-top{display:flex;align-items:center;gap:.38rem;margin-bottom:.38rem;flex-wrap:wrap}
-.fc-num{font-size:.57rem;color:var(--red);font-weight:700;background:rgba(196,24,37,.1);border-radius:3px;padding:.07rem .3rem;flex-shrink:0}
-.fc-nick{color:var(--gold-l);font-family:'Black Han Sans',sans-serif;font-size:.82rem}
-.fc-sf{color:var(--text3);font-size:.64rem}
-.fc-time{color:var(--text3);font-size:.57rem;margin-left:auto}
-.fc-mine-badge{font-size:.55rem;color:var(--red);background:rgba(196,24,37,.12);border:1px solid rgba(196,24,37,.25);border-radius:3px;padding:.07rem .3rem}
-.fc-msg{font-size:.73rem;color:var(--text2);line-height:1.55;padding:.3rem .5rem;border-left:2px solid var(--border2);margin-bottom:.38rem;word-break:break-all;white-space:pre-wrap;max-height:5em;overflow:hidden;position:relative}
-.fc-msg.expanded{max-height:none}
-.fc-msg-fade{position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(transparent,var(--bg2))}
-.fc-more{font-size:.62rem;color:var(--text3);cursor:pointer;margin-bottom:.36rem;transition:color .2s}
-.fc-more:hover{color:var(--text2)}
-.fc-fortune{font-size:.77rem;color:var(--text);line-height:1.6;word-break:keep-all;display:flex;gap:.36rem;align-items:flex-start}
-.fc-fortune-icon{flex-shrink:0;font-size:.9rem}
-.fc-reactions{display:flex;gap:.3rem;margin-top:.48rem;flex-wrap:wrap}
-.react-btn{font-size:.65rem;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:.15rem .52rem;cursor:pointer;display:flex;align-items:center;gap:.16rem;transition:all .18s;color:var(--text2);font-family:'Noto Sans KR',sans-serif}
-.react-btn:hover{border-color:var(--border3);background:var(--bg4);color:var(--text)}
-.react-btn.lit{border-color:var(--gold-d);background:rgba(196,154,32,.1);color:var(--gold-l)}
 .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;color:var(--text3);font-size:.76rem;text-align:center;padding:2rem}
-.empty-icon{font-size:2.4rem;opacity:.38}
+.ei{font-size:2.4rem;opacity:.38}
 
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.shake{animation:shake .35s ease-in-out!important;border-color:var(--red)!important}
+.shake{animation:shake .32s ease-in-out!important;border-color:var(--red)!important}
 
 @media(max-width:640px){
   #body{flex-direction:column}
-  #left{width:100%;border-right:none;border-bottom:1px solid var(--border);max-height:56vh}
-  #right{flex:1}
-  .hof-right{display:none}
+  #left{width:100%;border-right:none;border-bottom:1px solid var(--border);flex:0 0 auto;max-height:45vh;padding:.8rem}
+  .hof-r{display:none}
 }
 </style>
 </head>
 <body>
 
-<!-- 주인 전용 관리자 패널 (제목 5번 클릭으로 열림) -->
-<div id="admin-overlay">
-  <div id="admin-box">
-    <h2>🔐 주인 관리자 설정</h2>
-    <p class="admin-desc">
-      <b style="color:var(--text2)">jsonbin.io</b> → Bins → Create Bin<br>
-      Body에 <code style="color:var(--gold-l);font-size:.8rem">[]</code> 입력 후 생성 (Public으로 설정)<br>
-      API Keys 페이지에서 X-Master-Key 복사
-    </p>
-    <div class="admin-field">
-      <label>X-MASTER-KEY</label>
-      <input id="cfg-key" placeholder="$2a$10$..." autocomplete="off" spellcheck="false">
-    </div>
-    <div class="admin-field">
-      <label>BIN ID</label>
-      <input id="cfg-bin" placeholder="6848abc123def..." autocomplete="off" spellcheck="false">
-    </div>
-    <div id="admin-err"></div>
-    <button id="admin-save" onclick="saveAdmin()">저장하기</button>
-    <p class="admin-hint">키는 이 브라우저 localStorage에만 저장돼요<br>다른 사람들에게는 이 화면이 보이지 않아요</p>
-  </div>
-</div>
-
-<!-- 저주 명예의 전당 -->
+<!-- ══ HOF ══ -->
 <div id="hof">
   <div id="hof-title">🏯 저주 명예의 전당</div>
-  <div class="hof-ranks" id="hof-ranks">
-    <span class="hof-empty">기록을 불러오는 중...</span>
-  </div>
-  <div class="hof-right">
-    <div class="live-dot"></div>
-    <div class="stat-pill">총 <b id="total-cnt">—</b>번 던짐</div>
-    <div class="stat-pill">🔥 오늘 <b id="today-cnt">—</b>번</div>
+  <div class="hof-ranks" id="hof-ranks"><span class="hof-empty">불러오는 중...</span></div>
+  <div class="hof-r">
+    <div class="ldot"></div>
+    <div class="sp">총 <b id="total-cnt">—</b>발 던짐</div>
+    <div class="sp">인형 <b id="doll-cnt">—</b>개</div>
   </div>
 </div>
 
-<!-- 헤더 (제목 5번 클릭 = 관리자) -->
+<!-- ══ HEADER ══ -->
 <div id="hdr">
-  <div class="h-left">
-    <h1 id="title-click" title="주인: 5번 클릭하면 설정 열려요">⚔️ 표창의 전당</h1>
-    <span class="h-sub">COMMUNITY DOJO</span>
+  <div style="display:flex;align-items:center;gap:.45rem">
+    <h1>⚔️ 저주인형 전당</h1>
+    <span class="h-sub">CURSE DOLL COMMUNITY</span>
   </div>
-  <div class="h-right">별명별 피격 순위 · 30초 자동 갱신</div>
+  <div class="h-right">내 저주인형을 올리고 친구들과 함께 던져요 · 30초 갱신</div>
 </div>
 
 <div id="body">
 
-  <!-- 좌측: 인형 + 폼 -->
+  <!-- ══ LEFT ══ -->
   <div id="left">
-    <div id="arena">
-      <div class="ring" style="width:92px;height:92px;top:50%;left:50%;transform:translate(-50%,-50%)"></div>
-      <div class="ring" style="width:185px;height:185px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.68"></div>
-      <div class="ring" style="width:285px;height:285px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.36"></div>
+    <h2>🪆 내 저주인형 추가</h2>
 
-      <div id="target-wrap">
-        <div id="nick-tag">
-          <span class="tag-name" id="tag-name">???</span>
-          <span class="tag-sf">의 인형</span>
-        </div>
-
-        <svg id="doll-svg" viewBox="0 0 200 275" xmlns="http://www.w3.org/2000/svg">
-          <g class="dp" id="dp-ra" style="transform-origin:155px 138px">
-            <rect x="141" y="111" width="34" height="52" rx="10" fill="#c8a870" stroke="#8a6020" stroke-width="2"/>
-            <line x1="150" y1="124" x2="168" y2="124" stroke="#7a5020" stroke-width="1" stroke-dasharray="4,3" opacity=".42"/>
-            <line x1="150" y1="146" x2="168" y2="146" stroke="#7a5020" stroke-width="1" stroke-dasharray="4,3" opacity=".42"/>
-            <circle cx="158" cy="160" r="7" fill="#b89060" stroke="#8a6020" stroke-width="1.5"/>
-          </g>
-          <g class="dp" id="dp-la" style="transform-origin:45px 138px">
-            <rect x="25" y="111" width="34" height="52" rx="10" fill="#c8a870" stroke="#8a6020" stroke-width="2"/>
-            <line x1="32" y1="124" x2="50" y2="124" stroke="#7a5020" stroke-width="1" stroke-dasharray="4,3" opacity=".42"/>
-            <line x1="32" y1="146" x2="50" y2="146" stroke="#7a5020" stroke-width="1" stroke-dasharray="4,3" opacity=".42"/>
-            <circle cx="42" cy="160" r="7" fill="#b89060" stroke="#8a6020" stroke-width="1.5"/>
-          </g>
-          <g class="dp" id="dp-ll" style="transform-origin:76px 238px">
-            <rect x="56" y="202" width="40" height="62" rx="11" fill="#c8a870" stroke="#8a6020" stroke-width="2"/>
-            <ellipse cx="76" cy="261" rx="13" ry="5" fill="#b89060" stroke="#8a6020" stroke-width="1.5"/>
-          </g>
-          <g class="dp" id="dp-rl" style="transform-origin:124px 238px">
-            <rect x="104" y="202" width="40" height="62" rx="11" fill="#c8a870" stroke="#8a6020" stroke-width="2"/>
-            <ellipse cx="124" cy="261" rx="13" ry="5" fill="#b89060" stroke="#8a6020" stroke-width="1.5"/>
-          </g>
-          <g class="dp" id="dp-body" style="transform-origin:100px 162px">
-            <rect x="87" y="100" width="26" height="14" rx="5" fill="#b89060"/>
-            <rect x="54" y="108" width="92" height="98" rx="15" fill="#c8a870" stroke="#8a6020" stroke-width="2.5"/>
-            <circle cx="100" cy="153" r="30" fill="none" stroke="#c41825" stroke-width="2" opacity=".9"/>
-            <circle cx="100" cy="153" r="20" fill="none" stroke="#c41825" stroke-width="1.6" opacity=".7"/>
-            <circle cx="100" cy="153" r="10" fill="none" stroke="#c41825" stroke-width="1.3" opacity=".6"/>
-            <circle cx="100" cy="153" r="3.5" fill="#c41825" opacity=".85"/>
-            <line x1="100" y1="118" x2="100" y2="188" stroke="#c41825" stroke-width=".8" opacity=".28"/>
-            <line x1="65" y1="153" x2="135" y2="153" stroke="#c41825" stroke-width=".8" opacity=".28"/>
-          </g>
-          <g class="dp" id="dp-head" style="transform-origin:100px 53px">
-            <ellipse cx="100" cy="55" rx="46" ry="48" fill="#c8a870" stroke="#8a6020" stroke-width="2.5"/>
-            <path d="M58 38 Q100 12 142 38" fill="none" stroke="#8a6020" stroke-width="1.5" stroke-dasharray="6,4" opacity=".58"/>
-            <line x1="79" y1="41" x2="90" y2="52" stroke="#4a2800" stroke-width="3.2" stroke-linecap="round"/>
-            <line x1="90" y1="41" x2="79" y2="52" stroke="#4a2800" stroke-width="3.2" stroke-linecap="round"/>
-            <line x1="110" y1="41" x2="121" y2="52" stroke="#4a2800" stroke-width="3.2" stroke-linecap="round"/>
-            <line x1="121" y1="41" x2="110" y2="52" stroke="#4a2800" stroke-width="3.2" stroke-linecap="round"/>
-            <path d="M82 71 Q100 83 118 71" fill="none" stroke="#4a2800" stroke-width="2.5" stroke-dasharray="5,4" stroke-linecap="round"/>
-            <ellipse cx="71" cy="63" rx="9" ry="6" fill="#d06040" opacity=".15"/>
-            <ellipse cx="129" cy="63" rx="9" ry="6" fill="#d06040" opacity=".15"/>
-            <circle cx="100" cy="63" r="3" fill="#a07040" opacity=".42"/>
-          </g>
-        </svg>
-        <div id="stand"><div class="s-pole"></div><div class="s-base"></div></div>
-      </div>
-
-      <div id="shuri">
-        <svg viewBox="-44 -44 88 88" width="62" height="62" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="0,-38 9,-9 38,0 9,9 0,38 -9,9 -38,0 -9,-9" fill="#a8b8c8" stroke="#7888a0" stroke-width="1"/>
-          <rect x="-7" y="-38" width="14" height="76" rx="4" fill="#c0cad8" opacity=".75"/>
-          <rect x="-7" y="-38" width="14" height="76" rx="4" fill="#c0cad8" transform="rotate(90)" opacity=".75"/>
-          <rect x="-7" y="-38" width="14" height="76" rx="4" fill="#c0cad8" transform="rotate(45)" opacity=".52"/>
-          <rect x="-7" y="-38" width="14" height="76" rx="4" fill="#c0cad8" transform="rotate(-45)" opacity=".52"/>
-          <circle cx="0" cy="0" r="9" fill="#7888a0" stroke="#607080" stroke-width="1.5"/>
-          <circle cx="0" cy="0" r="4" fill="#50606e"/>
-        </svg>
-      </div>
-      <div id="flash"></div>
-
-      <div id="fortune">
-        <div id="f-box">
-          <span class="f-icon" id="f-icon">⏳</span>
-          <div id="f-text" class="loading">격려문구 생성 중...</div>
-          <button id="again-btn" onclick="resetGame()">↺ 다시 던지기</button>
-        </div>
-      </div>
+    <div class="form-group">
+      <label>내 이름 (닉네임)</label>
+      <input id="f-creator" placeholder="예) 김예리, 민지언니..." maxlength="10">
+    </div>
+    <div class="form-group">
+      <label>저주 대상 별명</label>
+      <input id="f-nick" placeholder="예) 갸쉐끼, 그팀장, 진상고객..." maxlength="15">
+    </div>
+    <div class="form-group">
+      <label>왜 저주해? <span style="color:var(--text3);font-size:.56rem">(선택)</span></label>
+      <textarea id="f-reason" placeholder="이 인형을 올리는 이유를 써봐요&#10;친구들이 공감해줄거야!"></textarea>
     </div>
 
-    <div id="form-strip">
-      <div>
-        <div class="row-label">1 — 별명 (누구 인형이에요?)</div>
-        <input id="nick-input" placeholder="예) 그 팀장, 진상고객, 꼰대선배..." maxlength="20">
-      </div>
-      <div>
-        <div class="row-label">2 — 하고 싶은 말 <span style="color:var(--text3);font-size:.56rem">(선택)</span></div>
-        <textarea id="msg-input" placeholder="속 시원히 다 털어봐요. 솔직하게!"></textarea>
-      </div>
-      <button id="throw-btn" onclick="doThrow()">⚡ 표창 던지기!</button>
+    <button id="add-btn" onclick="addDoll()">🪆 인형 올리기</button>
+    <p class="form-hint">인형을 올리면 친구들이<br>나도 던지기로 같이 저주해줄 수 있어요!</p>
+
+    <div class="divider"></div>
+
+    <div id="my-dolls-preview">
+      <h3>내가 올린 인형</h3>
+      <div id="my-doll-list"><span style="font-size:.7rem;color:var(--text3)">아직 없어요</span></div>
     </div>
   </div>
 
-  <!-- 우측: 커뮤니티 피드 -->
+  <!-- ══ RIGHT ══ -->
   <div id="right">
     <div id="feed-hdr">
-      <div class="feed-title">
-        <div class="live-dot"></div>
-        모두의 스트레스 처리현황
-        <span class="feed-cnt" id="feed-cnt-badge">0개</span>
+      <div class="ft">
+        <div class="ldot"></div>
+        모두의 저주인형
+        <span class="fcnt" id="feed-cnt-badge">0개</span>
       </div>
-      <div class="feed-actions">
-        <button class="feed-btn active" id="sort-new" onclick="setSort('new')">최신순</button>
-        <button class="feed-btn" id="sort-react" onclick="setSort('react')">공감순</button>
-        <button class="feed-btn" onclick="loadFeed()">↺ 새로고침</button>
+      <div class="fa">
+        <button class="fb act" id="sort-new" onclick="setSort('new')">최신순</button>
+        <button class="fb" id="sort-hot" onclick="setSort('hot')">많이맞은순</button>
+        <button class="fb" onclick="loadFeed()">↺ 새로고침</button>
       </div>
     </div>
-    <div id="feed-list">
-      <div class="skel"><div class="skel-line" style="width:40%"></div><div class="skel-line" style="width:80%"></div><div class="skel-line" style="width:60%"></div></div>
-      <div class="skel"><div class="skel-line" style="width:35%"></div><div class="skel-line" style="width:85%"></div><div class="skel-line" style="width:52%"></div></div>
-      <div class="skel"><div class="skel-line" style="width:45%"></div><div class="skel-line" style="width:70%"></div></div>
+    <div id="feed">
+      <div class="skel"><div class="sl" style="width:35%"></div><div class="sl" style="width:80%"></div><div class="sl" style="width:58%"></div></div>
+      <div class="skel"><div class="sl" style="width:40%"></div><div class="sl" style="width:70%"></div><div class="sl" style="width:65%"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THROW MODAL ══ -->
+<div id="throw-modal">
+  <div id="tm-box">
+    <div id="tm-arena">
+      <div class="tm-ring" style="width:80px;height:80px;top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+      <div class="tm-ring" style="width:160px;height:160px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.65"></div>
+      <div class="tm-ring" style="width:240px;height:240px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.35"></div>
+
+      <div id="tm-target">
+        <div id="tm-nick-tag">
+          <span class="tmnt" id="tm-nick-txt">???</span>
+          <span class="tmsf">의 인형</span>
+        </div>
+        <!-- mini doll SVG -->
+        <svg id="tm-doll" viewBox="0 0 200 275" width="115" height="158" xmlns="http://www.w3.org/2000/svg">
+          <g class="tmdp" id="tm-ra" style="transform-origin:155px 138px">
+            <rect x="141" y="111" width="34" height="52" rx="10" fill="#c8a870" stroke="#8a6020" stroke-width="2"/>
+            <circle cx="158" cy="160" r="7" fill="#b89060" stroke="#8a6020" stroke-width="1.5"/>
+          </g>
+          <g class="tmdp" id="tm-la" style="transform-origin:45px 138px">
+            <rect x="25" y="111" width="34" height="52" rx="10" fill="#c8a870" stroke="#8a6020" stroke-width="2"/>
+            <circle cx="42" cy="160" r="7" fill="#b89060" stroke="#8a6020" stroke-width="1.5"/>
+          </g>
+          <g class="tmdp" id="tm-ll" style="transform-origin:76px 238px">
+            <rect x="56" y="202" width="40" height="62" rx="11" fill="#c8a870" stroke="#8a6020" stroke-width="2"/>
+            <ellipse cx="76" cy="261" rx="13" ry="5" fill="#b89060" stroke="#8a6020" stroke-width="1.5"/>
+          </g>
+          <g class="tmdp" id="tm-rl" style="transform-origin:124px 238px">
+            <rect x="104" y="202" width="40" height="62" rx="11" fill="#c8a870" stroke="#8a6020" stroke-width="2"/>
+            <ellipse cx="124" cy="261" rx="13" ry="5" fill="#b89060" stroke="#8a6020" stroke-width="1.5"/>
+          </g>
+          <g class="tmdp" id="tm-body" style="transform-origin:100px 162px">
+            <rect x="87" y="100" width="26" height="14" rx="5" fill="#b89060"/>
+            <rect x="54" y="108" width="92" height="98" rx="15" fill="#c8a870" stroke="#8a6020" stroke-width="2.5"/>
+            <circle cx="100" cy="153" r="28" fill="none" stroke="#c41825" stroke-width="1.8" opacity=".9"/>
+            <circle cx="100" cy="153" r="17" fill="none" stroke="#c41825" stroke-width="1.4" opacity=".7"/>
+            <circle cx="100" cy="153" r="7" fill="none" stroke="#c41825" stroke-width="1.2" opacity=".6"/>
+            <circle cx="100" cy="153" r="3" fill="#c41825" opacity=".85"/>
+          </g>
+          <g class="tmdp" id="tm-head" style="transform-origin:100px 53px">
+            <ellipse cx="100" cy="55" rx="46" ry="48" fill="#c8a870" stroke="#8a6020" stroke-width="2.5"/>
+            <path d="M58 38 Q100 12 142 38" fill="none" stroke="#8a6020" stroke-width="1.5" stroke-dasharray="6,4" opacity=".55"/>
+            <line x1="79" y1="41" x2="90" y2="52" stroke="#4a2800" stroke-width="3" stroke-linecap="round"/>
+            <line x1="90" y1="41" x2="79" y2="52" stroke="#4a2800" stroke-width="3" stroke-linecap="round"/>
+            <line x1="110" y1="41" x2="121" y2="52" stroke="#4a2800" stroke-width="3" stroke-linecap="round"/>
+            <line x1="121" y1="41" x2="110" y2="52" stroke="#4a2800" stroke-width="3" stroke-linecap="round"/>
+            <path d="M82 71 Q100 83 118 71" fill="none" stroke="#4a2800" stroke-width="2.2" stroke-dasharray="5,4" stroke-linecap="round"/>
+            <ellipse cx="71" cy="63" rx="9" ry="6" fill="#d06040" opacity=".14"/>
+            <ellipse cx="129" cy="63" rx="9" ry="6" fill="#d06040" opacity=".14"/>
+          </g>
+        </svg>
+        <div id="tm-stand">
+          <div class="tms-pole"></div>
+          <div class="tms-base"></div>
+        </div>
+      </div>
+
+      <div id="tm-shuri">
+        <svg viewBox="-44 -44 88 88" width="55" height="55" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="0,-38 9,-9 38,0 9,9 0,38 -9,9 -38,0 -9,-9" fill="#a8b8c8" stroke="#7888a0" stroke-width="1"/>
+          <rect x="-7" y="-38" width="14" height="76" rx="4" fill="#c0cad8" opacity=".75"/>
+          <rect x="-7" y="-38" width="14" height="76" rx="4" fill="#c0cad8" transform="rotate(90)" opacity=".75"/>
+          <rect x="-7" y="-38" width="14" height="76" rx="4" fill="#c0cad8" transform="rotate(45)" opacity=".5"/>
+          <rect x="-7" y="-38" width="14" height="76" rx="4" fill="#c0cad8" transform="rotate(-45)" opacity=".5"/>
+          <circle cx="0" cy="0" r="8" fill="#7888a0" stroke="#607080" stroke-width="1.5"/>
+          <circle cx="0" cy="0" r="3.5" fill="#50606e"/>
+        </svg>
+      </div>
+      <div id="tm-flash"></div>
+
+      <div id="tm-fortune">
+        <div id="tm-f-inner">
+          <span class="tmfi" id="tm-f-icon">⏳</span>
+          <div id="tm-f-text" class="loading">격려문구 생성 중...</div>
+          <button id="tm-close-btn" onclick="closeModal()">닫기</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tm-form">
+      <div class="tm-who">
+        <b id="tm-creator-txt">???</b>의 저주인형
+        「<b id="tm-nick-txt2">???</b>」에 나도 던지기!
+      </div>
+      <input id="tm-myname" placeholder="내 이름 (닉네임)" maxlength="10">
+      <textarea id="tm-msg" placeholder="한마디 해줄래? (선택)&#10;같이 저주해주는 한 마디!"></textarea>
+      <div class="tm-btns">
+        <button id="tm-cancel" onclick="closeModal()">취소</button>
+        <button id="tm-throw-btn" onclick="doThrow()">⚡ 던지기!</button>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-/* ══════════════════════════════════════════════
-   주인이 처음 한 번만 설정 → 그 다음부터 자동
-   일반 사용자는 설정화면 절대 안 보임
-══════════════════════════════════════════════ */
+/* ╔═══════════════════════════════════╗
+   ║  🔑 여기만 채우면 됩니다!         ║
+   ╚═══════════════════════════════════╝ */
+const JSONBIN_KEY = '$2a$10$doy3ZXd3kyC6D.R37m4DKeNfV1PBou1R8tXDGKUHJCsn4ZLut2A/a';  // ← X-Master-Key 여기에
+const JSONBIN_BIN = '6a168d7ef47d5c455c3bd8f1';  // ← BIN ID 여기에
+/* ═══════════════════════════════════ */
 
 const ICONS=['🌟','🔥','💥','⚡','🎯','🌈','💫','✨','🎊','🏆','😤','🙌','🦾','🎉','👊'];
-const COLORS=['#c41825','#d4aa40','#c8a870','#8090a0','#6070a0','#a04050','#50a070','#7050a0'];
-const REACT=['😂','🔥','😭','👊','💪'];
-const REACT_LABEL=['ㅋㅋ공감','불공감','너무해','가야함','파이팅'];
+const COLORS=['#c41825','#d4aa40','#c8a870','#8090a0','#a04050','#50a070','#7050a0'];
 const MEDALS=['🥇','🥈','🥉'];
 const RANK_CLS=['r1','r2','r3'];
 
-/* ╔══════════════════════════════════════════╗
-   ║  🔑 여기만 바꾸면 됩니다!               ║
-   ╚══════════════════════════════════════════╝ */
-const JSONBIN_KEY = '$2a$10$doy3ZXd3kyC6D.R37m4DKeNfV1PBou1R8tXDGKUHJCsn4ZLut2A/a';   // ← X-Master-Key 붙여넣기  예) '$2a$10$abc...'
-const JSONBIN_BIN = '6a168d7ef47d5c455c3bd8f1';   // ← BIN ID 붙여넣기        예) '6848abc123def'
-/* ══════════════════════════════════════════ */
-
-let apiKey = JSONBIN_KEY;
-let binId  = JSONBIN_BIN;
-let sortMode='new', busy=false;
-let allRecords=[], myReacts={};
-let myId='';
-let titleClickCount=0, titleClickTimer=null;
-
-/* ── INIT ── */
-function init(){
-  myId = localStorage.getItem('dojo_uid') || genUID();
-  const raw = localStorage.getItem('dojo_reacts');
-  myReacts = raw ? JSON.parse(raw) : {};
-
-  if(apiKey && binId){
-    loadFeed();
-    setInterval(loadFeed, 30000);
-  } else {
-    document.getElementById('feed-list').innerHTML =
-      `<div class="empty-state"><div class="empty-icon">🔑</div><div>아직 준비 중이에요<br>잠시 후 다시 접속해주세요!</div></div>`;
-    document.getElementById('hof-ranks').innerHTML =
-      `<span class="hof-empty">준비 중</span>`;
+// 아바타 색상 - 사람 이름별로 고정
+const AV_COLORS=[
+  ['#c41825','#ff9090'],['#8a6a10','#e8b840'],['#0f4a8a','#7ab0f0'],
+  ['#4a108a','#b070e0'],['#0a6a3a','#50d090'],['#8a300a','#e07040'],
+  ['#2a408a','#7090e0'],['#6a0a4a','#d060a0'],
+];
+const creatorColors={};
+function getCreatorColor(name){
+  if(!creatorColors[name]){
+    const keys=Object.keys(creatorColors);
+    creatorColors[name]=AV_COLORS[keys.length % AV_COLORS.length];
   }
-
-  // 주인 전용: 제목 5번 클릭 → 관리자 패널
-  document.getElementById('title-click').addEventListener('click', ()=>{
-    titleClickCount++;
-    clearTimeout(titleClickTimer);
-    titleClickTimer = setTimeout(()=>{ titleClickCount=0; }, 1500);
-    if(titleClickCount >= 5){
-      titleClickCount = 0;
-      document.getElementById('cfg-key').value = apiKey;
-      document.getElementById('cfg-bin').value = binId;
-      document.getElementById('admin-overlay').classList.add('show');
-    }
-  });
-
-  // 관리자 패널 배경 클릭으로 닫기
-  document.getElementById('admin-overlay').addEventListener('click', e=>{
-    if(e.target === document.getElementById('admin-overlay'))
-      document.getElementById('admin-overlay').classList.remove('show');
-  });
+  return creatorColors[name];
 }
+
+let apiKey=JSONBIN_KEY, binId=JSONBIN_BIN;
+let myId=localStorage.getItem('dojo_uid')||genUID();
+let sortMode='new', busy=false;
+let allDolls=[];
+let currentDollId=null;
 
 function genUID(){
-  const id = 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-  localStorage.setItem('dojo_uid', id);
-  return id;
-}
-
-/* ── 관리자 저장 ── */
-async function saveAdmin(){
-  const k = document.getElementById('cfg-key').value.trim();
-  const b = document.getElementById('cfg-bin').value.trim();
-  const err = document.getElementById('admin-err');
-  if(!k || !b){ err.textContent='두 항목을 모두 입력해주세요'; return; }
-  err.textContent='연결 확인 중...';
-  document.getElementById('admin-save').disabled = true;
-  const ok = await testConn(k, b);
-  document.getElementById('admin-save').disabled = false;
-  if(!ok){ err.textContent='연결 실패 — 키 또는 BIN ID를 다시 확인해주세요'; return; }
-  apiKey = k; binId = b;
-  err.textContent = '';
-  document.getElementById('admin-overlay').classList.remove('show');
-  loadFeed();
-  setInterval(loadFeed, 30000);
-}
-
-async function testConn(k, b){
-  try{
-    const r = await fetch(`https://api.jsonbin.io/v3/b/${b}/latest`,{
-      headers:{'X-Master-Key':k,'X-Bin-Meta':'false'}
-    });
-    return r.ok;
-  }catch{ return false; }
+  const id='u'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  localStorage.setItem('dojo_uid',id);return id;
 }
 
 /* ── JSONBIN ── */
 async function readBin(){
-  const r = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`,{
+  if(!apiKey||!binId) return [];
+  const r=await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`,{
     headers:{'X-Master-Key':apiKey,'X-Bin-Meta':'false'}
   });
   if(!r.ok) throw new Error('read fail');
-  const data = await r.json();
-  return Array.isArray(data) ? data : [];
+  const data=await r.json();
+  return Array.isArray(data)?data:[];
 }
 async function writeBin(arr){
+  if(!apiKey||!binId) return;
   await fetch(`https://api.jsonbin.io/v3/b/${binId}`,{
     method:'PUT',
     headers:{'Content-Type':'application/json','X-Master-Key':apiKey},
@@ -490,230 +528,336 @@ async function writeBin(arr){
   });
 }
 
-/* ── LOAD & RENDER ── */
+/* ── LOAD ── */
 async function loadFeed(){
-  if(!apiKey || !binId) return;
+  if(!apiKey||!binId){
+    document.getElementById('feed').innerHTML=`<div class="empty-state"><div class="ei">🔑</div><div>JSONBIN_KEY 와 JSONBIN_BIN 을<br>파일 상단에 입력해주세요</div></div>`;
+    return;
+  }
   try{
-    const records = await readBin();
-    allRecords = records.map(r=>({...r, _myReacts: myReacts[r.id]||{}}));
-    renderFeed();
-    renderHOF();
-    updateStats();
-  }catch(e){ console.error(e); }
+    allDolls=await readBin();
+    renderFeed();renderHOF();updateStats();updateMyPreview();
+  }catch(e){console.error(e);}
 }
 
+/* ── RENDER FEED ── */
 function renderFeed(){
-  const list = document.getElementById('feed-list');
-  document.getElementById('feed-cnt-badge').textContent = allRecords.length + '개';
-  if(!allRecords.length){
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🥷</div><div>아직 아무도 표창을 던지지 않았어요<br>첫 번째 주인공이 되어보세요!</div></div>`;
+  const feed=document.getElementById('feed');
+  document.getElementById('feed-cnt-badge').textContent=allDolls.length+'개';
+  if(!allDolls.length){
+    feed.innerHTML=`<div class="empty-state"><div class="ei">🪆</div><div>아직 인형이 없어요<br>첫 번째로 저주인형을 올려봐요!</div></div>`;
     return;
   }
-  const sorted = [...allRecords].sort((a,b)=>
-    sortMode==='react' ? sumReacts(b.reactions||{})-sumReacts(a.reactions||{})
-                       : new Date(b.timestamp)-new Date(a.timestamp)
-  );
-  list.innerHTML = sorted.map(r=>cardHTML(r)).join('');
 
-  list.querySelectorAll('.fc-more').forEach(el=>{
-    el.addEventListener('click',()=>{
-      const msg = el.previousElementSibling;
-      msg.classList.toggle('expanded');
-      const fade = msg.querySelector('.fc-msg-fade');
-      if(fade) fade.style.display = msg.classList.contains('expanded') ? 'none' : 'block';
-      el.textContent = msg.classList.contains('expanded') ? '▲ 접기' : '▼ 더보기';
-    });
+  // 사람별 그룹
+  const groups={};
+  const order=[];
+  allDolls.forEach(d=>{
+    if(!groups[d.creator]){groups[d.creator]=[];order.push(d.creator);}
+    groups[d.creator].push(d);
   });
+
+  // 정렬
+  if(sortMode==='hot'){
+    order.sort((a,b)=>{
+      const sa=groups[a].reduce((s,d)=>s+totalThrows(d),0);
+      const sb=groups[b].reduce((s,d)=>s+totalThrows(d),0);
+      return sb-sa;
+    });
+  } else {
+    order.sort((a,b)=>{
+      const ta=Math.max(...groups[a].map(d=>new Date(d.timestamp)));
+      const tb=Math.max(...groups[b].map(d=>new Date(d.timestamp)));
+      return tb-ta;
+    });
+  }
+
+  feed.innerHTML=order.map(creator=>creatorBlockHTML(creator,groups[creator])).join('');
 }
 
-function renderHOF(){
-  const hofEl = document.getElementById('hof-ranks');
-  const cnt = {};
-  allRecords.forEach(r=>{ if(r.nickname) cnt[r.nickname] = (cnt[r.nickname]||0)+1; });
-  const ranked = Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,3);
-  if(!ranked.length){
-    hofEl.innerHTML = `<span class="hof-empty">아직 기록이 없어요</span>`;
-    return;
-  }
-  hofEl.innerHTML = ranked.map(([name,count],i)=>`
-    <div class="hof-rank ${RANK_CLS[i]}">
-      <span class="rank-medal">${MEDALS[i]}</span>
-      <div class="rank-info">
-        <span class="rank-name">「${esc(name)}」</span>
-        <span class="rank-cnt">표창 ${count}발 맞음</span>
+function totalThrows(d){ return (d.throws||[]).length; }
+
+function creatorBlockHTML(creator, dolls){
+  const [bg,fg]=getCreatorColor(creator);
+  const initials=creator.slice(0,2);
+  const sortedDolls=sortMode==='hot'
+    ?[...dolls].sort((a,b)=>totalThrows(b)-totalThrows(a))
+    :[...dolls].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+  const totalT=dolls.reduce((s,d)=>s+totalThrows(d),0);
+  return `
+  <div class="creator-block">
+    <div class="cb-header">
+      <div class="cb-avatar" style="background:${bg};color:${fg}">${initials}</div>
+      <div>
+        <div class="cb-name">${esc(creator)}의 저주인형들</div>
+        <div class="cb-sub">인형 ${dolls.length}개 · 총 ${totalT}발 맞음</div>
       </div>
     </div>
-  `).join('');
+    <div class="cb-dolls">${sortedDolls.map(d=>dollCardHTML(d,creator)).join('')}</div>
+  </div>`;
 }
 
-function updateStats(){
-  document.getElementById('total-cnt').textContent = allRecords.length;
-  const today = new Date().toDateString();
-  document.getElementById('today-cnt').textContent =
-    allRecords.filter(r=>new Date(r.timestamp).toDateString()===today).length;
-}
+function dollCardHTML(d, creator){
+  const throws=d.throws||[];
+  const cnt=throws.length;
+  const maxHits=Math.max(...allDolls.map(x=>(x.throws||[]).length),1);
+  const pct=Math.round(cnt/maxHits*100);
+  const isMine=d.uid===myId;
+  const recentThrows=throws.slice(-3).reverse();
+  const hasMore=throws.length>3;
 
-function sumReacts(r){ return Object.values(r||{}).reduce((s,v)=>s+v,0); }
-
-function cardHTML(r){
-  const isMine = r.uid === myId;
-  const reacts = r.reactions || {};
-  const isLong = r.message && r.message.length > 80;
   return `
-  <div class="fc${isMine?' mine':''}">
-    <div class="fc-top">
-      <span class="fc-num">#${r.id}</span>
-      <span class="fc-nick">「${esc(r.nickname)}」</span>
-      <span class="fc-sf">의 인형</span>
-      ${isMine?`<span class="fc-mine-badge">내 기록</span>`:''}
-      <span class="fc-time">${relTime(r.timestamp)}</span>
+  <div class="dc" data-id="${d.id}">
+    <div class="dc-doll">
+      <svg viewBox="0 0 200 275" width="48" height="65" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="100" cy="55" rx="42" ry="44" fill="#c8a870" stroke="#8a6020" stroke-width="2"/>
+        <line x1="79" y1="41" x2="90" y2="52" stroke="#4a2800" stroke-width="3" stroke-linecap="round"/>
+        <line x1="90" y1="41" x2="79" y2="52" stroke="#4a2800" stroke-width="3" stroke-linecap="round"/>
+        <line x1="110" y1="41" x2="121" y2="52" stroke="#4a2800" stroke-width="3" stroke-linecap="round"/>
+        <line x1="121" y1="41" x2="110" y2="52" stroke="#4a2800" stroke-width="3" stroke-linecap="round"/>
+        <path d="M84 70 Q100 80 116 70" fill="none" stroke="#4a2800" stroke-width="2" stroke-dasharray="4,3" stroke-linecap="round"/>
+        <rect x="58" y="105" width="84" height="90" rx="13" fill="#c8a870" stroke="#8a6020" stroke-width="2"/>
+        <circle cx="100" cy="150" r="24" fill="none" stroke="#c41825" stroke-width="1.6" opacity=".85"/>
+        <circle cx="100" cy="150" r="9" fill="none" stroke="#c41825" stroke-width="1.2" opacity=".65"/>
+        <circle cx="100" cy="150" r="3" fill="#c41825" opacity=".8"/>
+        <rect x="28" y="108" width="30" height="46" rx="9" fill="#c8a870" stroke="#8a6020" stroke-width="1.5"/>
+        <rect x="142" y="108" width="30" height="46" rx="9" fill="#c8a870" stroke="#8a6020" stroke-width="1.5"/>
+        <rect x="60" y="196" width="36" height="55" rx="10" fill="#c8a870" stroke="#8a6020" stroke-width="1.5"/>
+        <rect x="104" y="196" width="36" height="55" rx="10" fill="#c8a870" stroke="#8a6020" stroke-width="1.5"/>
+      </svg>
+      <div class="dc-hit-bar"><div class="dc-hit-fill" style="width:${pct}%"></div></div>
     </div>
-    ${r.message?`
-    <div class="fc-msg" style="position:relative">
-      ${esc(r.message)}${isLong?`<div class="fc-msg-fade"></div>`:''}
-    </div>
-    ${isLong?`<div class="fc-more">▼ 더보기</div>`:''}`:''}
-    <div class="fc-fortune">
-      <span class="fc-fortune-icon">${r.icon||'🌟'}</span>
-      <span>${esc(r.fortune)}</span>
-    </div>
-    <div class="fc-reactions">
-      ${REACT.map((em,i)=>{
-        const cnt2 = reacts[em]||0;
-        const lit = (r._myReacts||{})[em];
-        return `<button class="react-btn${lit?' lit':''}" data-id="${r.id}" data-em="${em}">${em} ${REACT_LABEL[i]}${cnt2?' <b>'+cnt2+'</b>':''}</button>`;
-      }).join('')}
+    <div class="dc-body">
+      <div class="dc-top">
+        <span class="dc-nick">「${esc(d.nickname)}」</span>
+        <span class="dc-sf">인형</span>
+        ${isMine?`<span style="font-size:.56rem;color:var(--red);background:rgba(196,24,37,.1);border:1px solid rgba(196,24,37,.22);border-radius:3px;padding:.05rem .3rem">내 인형</span>`:''}
+        <span class="dc-cnt">⚡ ${cnt}발</span>
+      </div>
+      ${d.reason?`<div class="dc-reason">${esc(d.reason)}</div>`:''}
+      ${recentThrows.length?`
+      <div class="dc-throws">
+        ${hasMore?`<div class="throw-more" onclick="toggleThrows(this,${d.id})">▼ 던진 사람 ${cnt}명 보기</div>`:''}
+        <div class="throw-list" style="${hasMore?'display:none':''}">
+          ${throws.slice().reverse().map(t=>`
+          <div class="throw-item">
+            <span class="throw-icon">${t.icon||'🌟'}</span>
+            <div>
+              ${t.thrower?`<span style="font-size:.62rem;color:var(--purple);font-weight:500">${esc(t.thrower)}</span> `:''}
+              <span class="throw-fortune">${esc(t.fortune)}</span>
+            </div>
+            <span class="throw-time">${relTime(t.timestamp)}</span>
+          </div>`).join('')}
+        </div>
+      </div>`:''}
+      <button class="dc-throw-btn" onclick="openModal(${d.id})">⚡ 나도 던지기!</button>
     </div>
   </div>`;
 }
 
-/* ── 공감 반응 (이벤트 위임) ── */
-document.getElementById('feed-list').addEventListener('click', async e=>{
-  const btn = e.target.closest('.react-btn');
-  if(!btn || !apiKey || !binId) return;
-  const id = parseInt(btn.dataset.id);
-  const em = btn.dataset.em;
-  const rec = allRecords.find(r=>r.id===id);
-  if(!rec) return;
-  if(!rec._myReacts) rec._myReacts = {};
-  if(!rec.reactions) rec.reactions = {};
-  if(rec._myReacts[em]){
-    rec._myReacts[em] = false;
-    rec.reactions[em] = Math.max(0,(rec.reactions[em]||1)-1);
-  } else {
-    rec._myReacts[em] = true;
-    rec.reactions[em] = (rec.reactions[em]||0)+1;
-  }
-  myReacts[id] = rec._myReacts;
-  localStorage.setItem('dojo_reacts', JSON.stringify(myReacts));
-  renderFeed();
-  const toSave = allRecords.map(r=>{ const {_myReacts,...rest}=r; return rest; });
-  try{ await writeBin(toSave); }catch(e){ console.error(e); }
-});
+function toggleThrows(el, dollId){
+  const list=el.nextElementSibling;
+  const open=list.style.display!=='none';
+  list.style.display=open?'none':'flex';
+  list.style.flexDirection='column';
+  list.style.gap='.28rem';
+  el.textContent=open?`▼ 던진 사람 보기`:`▲ 접기`;
+}
 
-/* ── THROW ── */
-async function doThrow(){
-  if(busy) return;
-  if(!apiKey || !binId){
-    alert('아직 준비 중이에요. 잠시 후 다시 시도해주세요!');
-    return;
-  }
-  const nick = document.getElementById('nick-input').value.trim();
-  const msg  = document.getElementById('msg-input').value.trim();
-  if(!nick){
-    const inp = document.getElementById('nick-input');
-    inp.classList.add('shake');
-    inp.addEventListener('animationend', ()=>inp.classList.remove('shake'), {once:true});
-    inp.focus(); return;
-  }
-  busy = true;
-  document.getElementById('throw-btn').disabled = true;
-  document.getElementById('tag-name').textContent = nick;
+/* ── HOF ── */
+function renderHOF(){
+  const hofEl=document.getElementById('hof-ranks');
+  if(!allDolls.length){hofEl.innerHTML=`<span class="hof-empty">아직 없어요</span>`;return;}
+  const ranked=[...allDolls].sort((a,b)=>totalThrows(b)-totalThrows(a)).slice(0,3);
+  hofEl.innerHTML=ranked.map((d,i)=>`
+    <div class="hr ${RANK_CLS[i]}">
+      <span class="rm">${MEDALS[i]}</span>
+      <div class="rinfo">
+        <span class="rn">「${esc(d.nickname)}」</span>
+        <span class="rc">${esc(d.creator)} · ${totalThrows(d)}발 맞음</span>
+      </div>
+    </div>`).join('');
+}
 
-  const fortuneProm = genFortune(nick, msg);
+function updateStats(){
+  const totalT=allDolls.reduce((s,d)=>s+totalThrows(d),0);
+  document.getElementById('total-cnt').textContent=totalT;
+  document.getElementById('doll-cnt').textContent=allDolls.length;
+}
 
-  // 표창 날리기
-  const shuri = document.getElementById('shuri');
-  shuri.classList.add('fly');
-  await new Promise(r=>shuri.addEventListener('animationend', r, {once:true}));
-  playHit();
-  const fl = document.getElementById('flash');
-  fl.classList.add('on'); setTimeout(()=>fl.classList.remove('on'), 90);
-  shuri.classList.remove('fly');
-  explodeDoll(); spawnParticles();
+function updateMyPreview(){
+  const myDolls=allDolls.filter(d=>d.uid===myId);
+  const el=document.getElementById('my-doll-list');
+  if(!myDolls.length){el.innerHTML=`<span style="font-size:.7rem;color:var(--text3)">아직 없어요</span>`;return;}
+  el.innerHTML=myDolls.map(d=>`
+    <div class="my-doll-chip">
+      <span class="mdc-nick">「${esc(d.nickname)}」</span>
+      <span class="mdc-cnt">⚡ ${totalThrows(d)}발</span>
+    </div>`).join('');
+}
 
-  document.getElementById('f-text').textContent = '✨ 격려문구 생성 중...';
-  document.getElementById('f-text').className = 'loading';
-  document.getElementById('f-icon').textContent = '⏳';
-  document.getElementById('fortune').classList.add('show');
-
-  const fortune = await fortuneProm;
-  const icon = ICONS[Math.floor(Math.random()*ICONS.length)];
-  document.getElementById('f-text').textContent = fortune;
-  document.getElementById('f-text').className = '';
-  document.getElementById('f-icon').textContent = icon;
-
-  // JSONBin 저장
+/* ── ADD DOLL ── */
+async function addDoll(){
+  if(!apiKey||!binId){alert('JSONBIN_KEY와 JSONBIN_BIN을 파일 상단에 입력해주세요');return;}
+  const creator=document.getElementById('f-creator').value.trim();
+  const nick=document.getElementById('f-nick').value.trim();
+  const reason=document.getElementById('f-reason').value.trim();
+  if(!creator){shake('f-creator');return;}
+  if(!nick){shake('f-nick');return;}
+  const btn=document.getElementById('add-btn');
+  btn.disabled=true; btn.textContent='올리는 중...';
   try{
-    const current = await readBin();
-    const rec = {
-      id: current.length + 1,
-      uid: myId,
-      nickname: nick,
-      message: msg,
-      fortune, icon,
-      reactions: {},
-      timestamp: new Date().toISOString()
+    const current=await readBin();
+    const rec={
+      id:Date.now(),uid:myId,creator,nickname:nick,reason,
+      throws:[],timestamp:new Date().toISOString()
     };
     current.push(rec);
     await writeBin(current);
-    allRecords = current.map(r=>({...r, _myReacts: myReacts[r.id]||{}}));
-    renderFeed(); renderHOF(); updateStats();
-  }catch(e){ console.error('저장 실패', e); }
+    allDolls=current;
+    document.getElementById('f-nick').value='';
+    document.getElementById('f-reason').value='';
+    renderFeed();renderHOF();updateStats();updateMyPreview();
+  }catch(e){console.error(e);alert('저장 실패!');}
+  btn.disabled=false; btn.textContent='🪆 인형 올리기';
 }
 
-function resetGame(){
-  document.getElementById('fortune').classList.remove('show');
-  resetDoll(); busy = false;
-  document.getElementById('throw-btn').disabled = false;
+/* ── THROW MODAL ── */
+function openModal(dollId){
+  const doll=allDolls.find(d=>d.id===dollId);
+  if(!doll) return;
+  currentDollId=dollId;
+  document.getElementById('tm-nick-txt').textContent=doll.nickname;
+  document.getElementById('tm-nick-txt2').textContent=doll.nickname;
+  document.getElementById('tm-creator-txt').textContent=doll.creator;
+  document.getElementById('tm-fortune').classList.remove('show');
+  resetTmDoll();
+  document.getElementById('throw-modal').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('throw-modal').classList.remove('show');
+  document.getElementById('tm-fortune').classList.remove('show');
+  document.getElementById('tm-throw-btn').disabled=false;
+  resetTmDoll();
+  currentDollId=null;
+  busy=false;
 }
 
-/* ── DOLL ── */
-function explodeDoll(){
-  [{id:'dp-head',x:-14,y:-128,r:215},{id:'dp-body',x:22,y:62,r:18},
-   {id:'dp-la',x:-150,y:-20,r:-125},{id:'dp-ra',x:150,y:-16,r:125},
-   {id:'dp-ll',x:-78,y:142,r:-65},{id:'dp-rl',x:78,y:142,r:65}
+async function doThrow(){
+  if(busy||currentDollId===null) return;
+  const myname=document.getElementById('tm-myname').value.trim();
+  const msg=document.getElementById('tm-msg').value.trim();
+  busy=true;
+  document.getElementById('tm-throw-btn').disabled=true;
+
+  const doll=allDolls.find(d=>d.id===currentDollId);
+  const fortuneProm=genFortune(doll?.nickname||'???',msg);
+
+  // 표창 날리기
+  const shuri=document.getElementById('tm-shuri');
+  shuri.classList.add('fly');
+  await new Promise(r=>shuri.addEventListener('animationend',r,{once:true}));
+  playHit();
+  const fl=document.getElementById('tm-flash');
+  fl.classList.add('on');setTimeout(()=>fl.classList.remove('on'),90);
+  shuri.classList.remove('fly');
+  explodeTmDoll();spawnTmParticles();
+
+  document.getElementById('tm-f-text').textContent='✨ 격려문구 생성 중...';
+  document.getElementById('tm-f-text').className='loading';
+  document.getElementById('tm-f-icon').textContent='⏳';
+  document.getElementById('tm-fortune').classList.add('show');
+
+  const fortune=await fortuneProm;
+  const icon=ICONS[Math.floor(Math.random()*ICONS.length)];
+  document.getElementById('tm-f-text').textContent=fortune;
+  document.getElementById('tm-f-text').className='';
+  document.getElementById('tm-f-icon').textContent=icon;
+
+  // 저장
+  try{
+    const current=await readBin();
+    const target=current.find(d=>d.id===currentDollId);
+    if(target){
+      if(!target.throws) target.throws=[];
+      target.throws.push({
+        uid:myId,thrower:myname||null,fortune,icon,
+        message:msg||null,timestamp:new Date().toISOString()
+      });
+      await writeBin(current);
+      allDolls=current;
+      renderFeed();renderHOF();updateStats();updateMyPreview();
+    }
+  }catch(e){console.error(e);}
+}
+
+/* ── DOLL ANIMATION ── */
+function explodeTmDoll(){
+  [{id:'tm-head',x:-12,y:-110,r:200},{id:'tm-body',x:18,y:55,r:15},
+   {id:'tm-la',x:-130,y:-18,r:-115},{id:'tm-ra',x:130,y:-14,r:115},
+   {id:'tm-ll',x:-68,y:120,r:-58},{id:'tm-rl',x:68,y:120,r:58}
   ].forEach(({id,x,y,r})=>{
     const el=document.getElementById(id);
     if(el){el.style.transform=`translate(${x}px,${y}px) rotate(${r}deg)`;el.style.opacity='0';}
   });
 }
-function resetDoll(){
-  document.querySelectorAll('.dp').forEach(el=>{
-    el.style.transition='none'; el.style.transform=''; el.style.opacity='1';
-    setTimeout(()=>el.style.transition='', 60);
+function resetTmDoll(){
+  document.querySelectorAll('.tmdp').forEach(el=>{
+    el.style.transition='none';el.style.transform='';el.style.opacity='1';
+    setTimeout(()=>el.style.transition='',60);
   });
 }
-
-/* ── PARTICLES ── */
-function spawnParticles(){
-  const arena = document.getElementById('arena');
-  const aw=arena.offsetWidth, ah=arena.offsetHeight;
-  for(let i=0;i<18;i++){
-    const p=document.createElement('div'); p.className='pt';
-    const sz=4+Math.random()*8;
-    p.style.cssText=`width:${sz}px;height:${sz}px;background:${COLORS[Math.floor(Math.random()*COLORS.length)]};top:${ah/2}px;left:${aw/2}px;`;
+function spawnTmParticles(){
+  const arena=document.getElementById('tm-arena');
+  const aw=arena.offsetWidth,ah=arena.offsetHeight;
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');p.className='tmpt';
+    const sz=3+Math.random()*7;
+    p.style.cssText=`width:${sz}px;height:${sz}px;background:${COLORS[Math.floor(Math.random()*COLORS.length)]};top:${ah/2}px;left:${aw/2}px;position:absolute;border-radius:50%;pointer-events:none;z-index:150;transition:transform .65s cubic-bezier(.2,.8,.3,1),opacity .5s ease-out`;
     arena.appendChild(p);
-    const angle=Math.random()*Math.PI*2, dist=55+Math.random()*170;
+    const angle=Math.random()*Math.PI*2,dist=45+Math.random()*130;
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       p.style.transform=`translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px)`;
       p.style.opacity='0';
     }));
-    setTimeout(()=>p.remove(), 850);
+    setTimeout(()=>p.remove(),750);
   }
 }
 
-/* ── AUDIO ── */
+/* ── SORT ── */
+function setSort(m){
+  sortMode=m;
+  document.getElementById('sort-new').classList.toggle('act',m==='new');
+  document.getElementById('sort-hot').classList.toggle('act',m==='hot');
+  renderFeed();
+}
+
+/* ── AI ── */
+async function genFortune(nick,msg){
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        messages:[{role:'user',content:`친구가 "${nick}"이라는 별명의 저주 대상에게 표창을 던져서 시원하게 해소했어!${msg?`\n한마디: "${msg}"`:''}
+
+표창이 인형에 꽂혔어! 이제 이 사람에게 유쾌한 격려 메시지를 써줘:
+- 한국어 2문장, 유쾌하고 힘이 나는 톤, 이모지 2개
+- 메시지만 출력`}]
+      })
+    });
+    const data=await r.json();
+    return data.content?.[0]?.text?.trim()||fallback();
+  }catch{return fallback();}
+}
+function fallback(){
+  return ['표창 한 방에 스트레스 증발! 💥 이 에너지로 오늘도 파이팅 💪',
+          '시원하게 날려버렸어! 🎯 좋은 일들만 앞에 기다리고 있어 🌟',
+          '카타르시스 완료! 🔥 넌 그 상황보다 훨씬 강한 사람 ⚡'][Math.floor(Math.random()*3)];
+}
+
+/* ── UTILS ── */
 function playHit(){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
@@ -725,44 +869,17 @@ function playHit(){
     o.start(t);o.stop(t+.32);
     const buf=ctx.createBuffer(1,Math.floor(ctx.sampleRate*.12),ctx.sampleRate);
     const d=buf.getChannelData(0);
-    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.5);
-    const src=ctx.createBufferSource(); src.buffer=buf;
-    const ng=ctx.createGain(); src.connect(ng); ng.connect(ctx.destination);
-    ng.gain.setValueAtTime(.4,t); src.start(t); src.stop(t+.12);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.5);
+    const src=ctx.createBufferSource();src.buffer=buf;
+    const ng=ctx.createGain();src.connect(ng);ng.connect(ctx.destination);
+    ng.gain.setValueAtTime(.4,t);src.start(t);src.stop(t+.12);
   }catch(e){}
 }
-
-/* ── AI 격려문구 ── */
-async function genFortune(nick, msg){
-  try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:1000,
-        messages:[{role:'user',content:`사용자가 "${nick}"이라는 별명의 누군가 때문에 스트레스가 쌓였는데, 표창을 던져서 시원하게 해소했어!${msg?`\n사용자가 털어놓은 말: "${msg}"`:''}
-
-표창을 던지고 인형이 박살났어. 이제 사용자에게 행운의 격려 메시지를 써줘:
-- 한국어 2~3문장, 유쾌하고 힘이 나는 톤, 약간의 유머
-- 앞으로 나아가자는 긍정 메시지, 이모지 2~3개
-- 메시지만 출력 (설명 없이)`}]
-      })
-    });
-    const data=await r.json();
-    return data.content?.[0]?.text?.trim() || fallback();
-  }catch{ return fallback(); }
-}
-function fallback(){
-  return ['표창 한 방에 스트레스 증발! 💥 이 가벼운 기분 그대로 오늘 최고의 하루 만들어봐 💪',
-          '시원하게 날려버렸어! 🎯 더 멋진 일들이 기다리고 있어 🌟',
-          '카타르시스 완료! 🔥 부정 에너지는 인형에게, 행운은 나에게 ⚡'][Math.floor(Math.random()*3)];
-}
-
-function setSort(m){
-  sortMode=m;
-  document.getElementById('sort-new').classList.toggle('active',m==='new');
-  document.getElementById('sort-react').classList.toggle('active',m==='react');
-  renderFeed();
+function shake(id){
+  const el=document.getElementById(id);
+  el.classList.add('shake');
+  el.addEventListener('animationend',()=>el.classList.remove('shake'),{once:true});
+  el.focus();
 }
 function relTime(ts){
   const d=Date.now()-new Date(ts).getTime(),m=Math.floor(d/60000);
@@ -770,9 +887,15 @@ function relTime(ts){
   const h=Math.floor(m/60);if(h<24)return h+'시간 전';
   return Math.floor(h/24)+'일 전';
 }
-function esc(s){ if(!s)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
-init();
+// 모달 바깥 클릭 닫기
+document.getElementById('throw-modal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('throw-modal')) closeModal();
+});
+
+loadFeed();
+setInterval(loadFeed,30000);
 </script>
 </body>
 </html>
