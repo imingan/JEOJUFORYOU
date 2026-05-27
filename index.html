@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚔️ 저주의 전당</title>
+<title>⚔️ 저주인형 전당</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════
@@ -345,8 +345,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
     </div>
 
     <button id="add-btn" onclick="addDoll()">🪆 인형 올리기</button>
-    <button id="test-btn" onclick="testConn()" style="width:100%;padding:.45rem;background:transparent;border:1px solid var(--border2);color:var(--text3);border-radius:6px;font-size:.72rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s" onmouseover="this.style.borderColor='var(--border3)';this.style.color='var(--text2)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text3)'">🔌 연결 테스트</button>
-    <button onclick="clearOldData()" style="width:100%;padding:.45rem;background:transparent;border:1px solid var(--border2);color:var(--text3);border-radius:6px;font-size:.72rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text3)'">🗑️ 이전 데이터 초기화</button>
+    <div id="add-err" style="font-size:.7rem;color:var(--red);min-height:1rem;text-align:center;line-height:1.5;word-break:break-all"></div>
+    <div id="conn-status" style="font-size:.65rem;text-align:center;color:var(--text3)">연결 확인 중...</div>
     <p class="form-hint">인형을 올리면 친구들이<br>나도 던지기로 같이 저주해줄 수 있어요!</p>
 
     <div class="divider"></div>
@@ -476,8 +476,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 /* ╔═══════════════════════════════════╗
    ║  🔑 여기만 채우면 됩니다!         ║
    ╚═══════════════════════════════════╝ */
-const JSONBIN_KEY = '6a168d7ef47d5c455c3bd8f1';  // ← X-Master-Key 여기에
-const JSONBIN_BIN = '$2a$10$doy3ZXd3kyC6D.R37m4DKeNfV1PBou1R8tXDGKUHJCsn4ZLut2A/a';  // ← BIN ID 여기에
+const JSONBIN_KEY = '$2a$10$doy3ZXd3kyC6D.R37m4DKeNfV1PBou1R8tXDGKUHJCsn4ZLut2A/a';  // ← X-Master-Key 여기에
+const JSONBIN_BIN = '6a168d7ef47d5c455c3bd8f1';  // ← BIN ID 여기에
 /* ═══════════════════════════════════ */
 
 const ICONS=['🌟','🔥','💥','⚡','🎯','🌈','💫','✨','🎊','🏆','😤','🙌','🦾','🎉','👊'];
@@ -581,14 +581,20 @@ async function clearOldData(){
 
 /* ── LOAD ── */
 async function loadFeed(){
+  const cs=document.getElementById('conn-status');
   if(!apiKey||!binId){
+    if(cs) cs.textContent='❌ KEY/BIN ID 미설정';
     document.getElementById('feed').innerHTML=`<div class="empty-state"><div class="ei">🔑</div><div>JSONBIN_KEY 와 JSONBIN_BIN 을<br>파일 상단에 입력해주세요</div></div>`;
     return;
   }
   try{
     allDolls=await readBin();
+    if(cs) cs.innerHTML='✅ <span style="color:var(--green)">연결됨</span>';
     renderFeed();renderHOF();updateStats();updateMyPreview();
-  }catch(e){console.error(e);}
+  }catch(e){
+    console.error('loadFeed 에러:',e);
+    if(cs) cs.textContent='❌ '+e.message;
+  }
 }
 
 /* ── RENDER FEED ── */
@@ -753,13 +759,20 @@ function updateMyPreview(){
 
 /* ── ADD DOLL ── */
 async function addDoll(){
-  if(!apiKey||!binId){alert('JSONBIN_KEY와 JSONBIN_BIN을 파일 상단에 입력해주세요');return;}
+  const btn=document.getElementById('add-btn');
+  const errEl=document.getElementById('add-err');
+  errEl.textContent='';
+
+  if(!apiKey||!binId){
+    errEl.textContent='⚠️ JSONBIN_KEY / BIN ID가 비어있어요';
+    return;
+  }
   const creator=document.getElementById('f-creator').value.trim();
   const nick=document.getElementById('f-nick').value.trim();
   const reason=document.getElementById('f-reason').value.trim();
   if(!creator){shake('f-creator');return;}
   if(!nick){shake('f-nick');return;}
-  const btn=document.getElementById('add-btn');
+
   btn.disabled=true; btn.textContent='올리는 중...';
   try{
     const current=await readBin();
@@ -772,9 +785,15 @@ async function addDoll(){
     allDolls=current;
     document.getElementById('f-nick').value='';
     document.getElementById('f-reason').value='';
+    errEl.textContent='';
     renderFeed();renderHOF();updateStats();updateMyPreview();
-  }catch(e){console.error(e);alert('저장 실패!\n\n'+e.message+'\n\nF12 → Console 탭에서 자세한 오류를 확인하세요');}
-  btn.disabled=false; btn.textContent='🪆 인형 올리기';
+  }catch(e){
+    console.error('addDoll 에러:', e);
+    errEl.textContent='❌ '+e.message;
+  }finally{
+    btn.disabled=false;
+    btn.textContent='🪆 인형 올리기';
+  }
 }
 
 /* ── THROW MODAL ── */
